@@ -42,7 +42,8 @@ class MapGroup[K, V](implicit override val scalar: Group[V])
 }
 
 @SerialVersionUID(0L)
-class MapCSemiring[K, V](implicit val scalar: CSemiring[V]) extends CSemiring[Map[K, V]] with Serializable {
+class MapCSemiring[K, V](implicit _scalar: CSemiring[V]) extends CSemiring[Map[K, V]] with Serializable {
+  val scalar = _scalar
 
   def zero: Map[K, V] = Map.empty
 
