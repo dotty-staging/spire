@@ -105,9 +105,9 @@ object EndoRingExample extends App {
 
   // We can define some simple endomorphisms.
   val id = pairedSetEndoRing.one
-  val double: Endo[PairedSet[Int]] = _.map(_ * 2)
-  val triple: Endo[PairedSet[Int]] = _.map(_ * 3)
-  val inc: Endo[PairedSet[Int]] = _.map(_ + 1)
+  val double: Endo[PairedSet[Int]] = pairedSet2set(_).map(_ * 2)
+  val triple: Endo[PairedSet[Int]] = pairedSet2set(_).map(_ * 3)
+  val inc: Endo[PairedSet[Int]] = pairedSet2set(_).map(_ + 1)
 
   // Let's generate the powers of 2 from 0 to n. The endomorphism
   // `double + id` means that we double the elements of a set, then union it
