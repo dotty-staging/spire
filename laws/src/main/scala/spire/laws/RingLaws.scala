@@ -45,7 +45,7 @@ trait RingLaws[A] extends GroupLaws[A] {
   val nonZeroLaws: GroupLaws[A]
   def pred: Predicate[A]
 
-  def withPred(_pred: Predicate[A], replace: Boolean = true): RingLaws[A] = RingLaws[A](
+  def withPred(_pred: Predicate[A], replace: Boolean = true): RingLaws[A] = RingLaws[A](using
     Equ,
     Arb,
     if (replace) _pred else pred && _pred

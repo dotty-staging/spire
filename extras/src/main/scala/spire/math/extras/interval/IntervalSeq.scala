@@ -391,7 +391,7 @@ object IntervalSeq {
         fromA(a0, a1, bBelow(b0))
       } else {
         val am = (a0 + a1) / 2
-        val res = Searching.search(b, a(am), b0, b1 - 1)(order)
+        val res = Searching.search(b, a(am), b0, b1 - 1)(using order)
         if (res >= 0) {
           // same elements
           val bm = res
@@ -518,7 +518,7 @@ object IntervalSeq {
         fromA(a0, a1, bBelow(b0))
       } else {
         val am = (a0 + a1) / 2
-        val res = Searching.search(b, a(am), b0, b1 - 1)(order)
+        val res = Searching.search(b, a(am), b0, b1 - 1)(using order)
         if (res >= 0) {
           // same elements
           val bm = res
