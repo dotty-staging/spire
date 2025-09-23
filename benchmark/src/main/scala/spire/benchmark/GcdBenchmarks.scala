@@ -17,6 +17,7 @@ package spire
 package benchmark
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 
 import spire.implicits._
@@ -36,8 +37,8 @@ import Arrays.init
 @State(Scope.Thread)
 class GcdBenchmarks {
 
-  var longs: Array[Long] = null
-  var bigs: Array[BigInteger] = null
+  var longs: Array[Long] = uninitialized
+  var bigs: Array[BigInteger] = uninitialized
 
   @Setup
   def setup(): Unit = {

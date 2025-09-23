@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 
 import spire.algebra._
@@ -35,12 +36,12 @@ class ArrayOrderBenchmarks {
   @Param(Array("6", "10", "14", "18"))
   var pow: Int = 0
 
-  var a: Array[Int] = null
-  var b: Array[Int] = null
-  var c: Array[Int] = null
-  var d: Array[Int] = null
-  var e: Array[Int] = null
-  var f: Array[Int] = null
+  var a: Array[Int] = uninitialized
+  var b: Array[Int] = uninitialized
+  var c: Array[Int] = uninitialized
+  var d: Array[Int] = uninitialized
+  var e: Array[Int] = uninitialized
+  var f: Array[Int] = uninitialized
 
   @Setup
   def setup(): Unit = {

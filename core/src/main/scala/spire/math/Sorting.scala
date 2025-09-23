@@ -101,7 +101,7 @@ object MergeSort extends Sort {
 
     var buf1: Array[A] = data
     var buf2: Array[A] = new Array[A](len)
-    var tmp: Array[A] = null
+    var tmp: Array[A] = null.asInstanceOf[Array[A]]
 
     var i = 0
     var limit = len - startWidth

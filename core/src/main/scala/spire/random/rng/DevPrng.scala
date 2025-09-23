@@ -17,6 +17,8 @@ package spire
 package random
 package rng
 
+import scala.compiletime.uninitialized
+
 import java.io._
 
 class Device(f: File) extends Generator { self =>
@@ -45,7 +47,7 @@ object Device {
 }
 
 class CycledFile(f: File) extends Generator { self =>
-  private var dis: DataInputStream = null
+  private var dis: DataInputStream = uninitialized
 
   if (!f.canRead)
     throw new IllegalArgumentException("can't read %s".format(f))

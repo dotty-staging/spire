@@ -23,6 +23,7 @@ import spire.math._
 import java.lang.Math
 import java.util.concurrent.TimeUnit
 import scala.util.Random
+import scala.compiletime.uninitialized
 
 import Arrays.init
 
@@ -37,9 +38,9 @@ class NaturalBenchmarks {
   @Param(Array("10"))
   var pow: Int = 0
 
-  var nats: Array[Natural] = null
-  var bigints: Array[BigInt] = null
-  var safes: Array[SafeLong] = null
+  var nats: Array[Natural] = uninitialized
+  var bigints: Array[BigInt] = uninitialized
+  var safes: Array[SafeLong] = uninitialized
 
   @Setup
   def setUp(): Unit = {

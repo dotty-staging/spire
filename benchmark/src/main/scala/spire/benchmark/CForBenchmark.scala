@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 
 import spire.syntax.cfor._
@@ -36,7 +37,7 @@ class CForBenchmarks {
   @Param(Array("1000000"))
   var size: Int = 0
 
-  var arr: Array[Long] = null
+  var arr: Array[Long] = uninitialized
 
   @Setup
   def setup(): Unit = {

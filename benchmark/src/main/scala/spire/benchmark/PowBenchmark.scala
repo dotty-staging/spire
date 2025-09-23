@@ -17,6 +17,7 @@ package spire
 package benchmark
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 import org.openjdk.jmh.annotations._
 import java.util.concurrent.TimeUnit
@@ -29,9 +30,9 @@ import spire.implicits._
 @State(Scope.Thread)
 class PowBenchmarks {
 
-  var longs: Array[Long] = null
-  var ints: Array[Int] = null
-  var doubles: Array[Double] = null
+  var longs: Array[Long] = uninitialized
+  var ints: Array[Int] = uninitialized
+  var doubles: Array[Double] = uninitialized
 
   @Setup
   def setUp(): Unit = {

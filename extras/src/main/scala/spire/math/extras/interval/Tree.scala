@@ -73,7 +73,7 @@ private[interval] object Tree {
    * @return
    *   the result, can be null
    */
-  @inline final private def branch(p: Long, level: Byte, l: Tree, r: Tree): Tree =
+  @inline final private def branch(p: Long, level: Byte, l: Tree | Null, r: Tree | Null): Tree | Null =
     if (l eq null)
       r
     else if (r eq null)
@@ -225,15 +225,15 @@ private[interval] object Tree {
       }
     }
 
-    final def apply(a0: Boolean, a: Tree, b0: Boolean, b: Tree): Boolean = op(a0, b0) && {
+    final def apply(a0: Boolean, a: Tree | Null, b0: Boolean, b: Tree | Null): Boolean = op(a0, b0) && {
       if ((a eq null) && (b eq null))
         true
       else if (a eq null)
-        overlapB(a0, b0, b)
+        overlapB(a0, b0, b.nn)
       else if (b eq null)
-        overlapA(a0, a, b0)
+        overlapA(a0, a.nn, b0)
       else
-        op(a0, a, b0, b)
+        op(a0, a.nn, b0, b.nn)
     }
   }
 
@@ -257,7 +257,7 @@ private[interval] object Tree {
      * @return
      *   the result, can be null
      */
-    final private def join(a0: Boolean, a: Tree, b0: Boolean, b: Tree): Tree = {
+    final private def join(a0: Boolean, a: Tree, b0: Boolean, b: Tree): Tree | Null = {
       val a_p = a.prefix
       val b_p = b.prefix
       val level = levelAbove(a_p, b_p)
@@ -292,7 +292,7 @@ private[interval] object Tree {
      * @return
      *   the result. Can be a leaf or null
      */
-    protected def collision(a0: Boolean, a: Leaf, b0: Boolean, b: Leaf): Tree
+    protected def collision(a0: Boolean, a: Leaf, b0: Boolean, b: Leaf): Tree | Null
 
     /**
      * This will be called when a is completely covered by a contiguous interval of b
@@ -304,7 +304,7 @@ private[interval] object Tree {
      * @return
      *   the result, can be null
      */
-    protected def overlapA(a0: Boolean, a: Tree, b0: Boolean): Tree
+    protected def overlapA(a0: Boolean, a: Tree, b0: Boolean): Tree | Null
 
     /**
      * This will be called when b is completely covered by a contiguous interval of a
@@ -316,7 +316,7 @@ private[interval] object Tree {
      * @return
      *   the result, can be null
      */
-    protected def overlapB(a0: Boolean, b0: Boolean, b: Tree): Tree
+    protected def overlapB(a0: Boolean, b0: Boolean, b: Tree): Tree | Null
 
     /**
      * Performs the binary operation for two arbitrary trees
@@ -331,7 +331,7 @@ private[interval] object Tree {
      * @return
      *   the result, can be null
      */
-    final private def op(a0: Boolean, a: Tree, b0: Boolean, b: Tree): Tree = {
+    final private def op(a0: Boolean, a: Tree, b0: Boolean, b: Tree): Tree | Null = {
       val a_l = a.level
       val a_p = a.prefix
       val b_l = b.level
@@ -400,15 +400,15 @@ private[interval] object Tree {
       }
     }
 
-    final def apply(a0: Boolean, a: Tree, b0: Boolean, b: Tree) = {
+    final def apply(a0: Boolean, a: Tree | Null, b0: Boolean, b: Tree | Null) = {
       if ((a eq null) && (b eq null))
         null
       else if (a eq null)
-        overlapB(a0, b0, b)
+        overlapB(a0, b0, b.nn)
       else if (b eq null)
-        overlapA(a0, a, b0)
+        overlapA(a0, a.nn, b0)
       else
-        op(a0, a, b0, b)
+        op(a0, a.nn, b0, b.nn)
     }
   }
 
@@ -505,7 +505,7 @@ private[interval] object Tree {
    */
   sealed abstract class Sampler {
 
-    def apply(a0: Boolean, a: Tree, value: Long) = op(a0, a, value)
+    def apply(a0: Boolean, a: Tree | Null, value: Long) = op(a0, a, value)
 
     /**
      * Method that is invoked when a leaf is found. This allows to customize whether we want at, before or after
@@ -516,7 +516,7 @@ private[interval] object Tree {
      */
     protected def onLeaf(a0: Boolean, a: Leaf): Boolean
 
-    final private def op(a0: Boolean, a: Tree, value: Long): Boolean = a match {
+    final private def op(a0: Boolean, a: Tree | Null, value: Long): Boolean = a match {
       case a: Branch =>
         val prefix = a.prefix
         val level = a.level
@@ -607,7 +607,7 @@ private[interval] object Tree {
 
     val sign = left.sign ^ right.sign
 
-    def lr(left: Tree, right: Tree): Tree = {
+    def lr(left: Tree | Null, right: Tree | Null): Tree | Null = {
       if (left eq null)
         right
       else if (right eq null)

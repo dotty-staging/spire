@@ -17,6 +17,7 @@ package spire
 package benchmark
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 
 import spire.math._
@@ -39,12 +40,12 @@ class RatComparisonBenchmarks {
   @Param(Array("100"))
   var size: Int = 0
 
-  var spires: Array[Rational] = null
-  var aps: Array[Aprational] = null
-  var jscis: Array[number.Rational] = null
+  var spires: Array[Rational] = uninitialized
+  var aps: Array[Aprational] = uninitialized
+  var jscis: Array[number.Rational] = uninitialized
 
-  var nums: Array[Int] = null
-  var denoms: Array[Int] = null
+  var nums: Array[Int] = uninitialized
+  var denoms: Array[Int] = uninitialized
 
   @Setup
   def setup(): Unit = {

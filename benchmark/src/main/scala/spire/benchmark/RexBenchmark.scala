@@ -20,6 +20,7 @@ import spire.math._
 import spire.benchmark.ArrayOrder
 import Arrays.mkarray
 import scala.util.Random._
+import scala.compiletime.uninitialized
 import org.openjdk.jmh.annotations._
 import java.util.concurrent.TimeUnit
 
@@ -30,8 +31,8 @@ class RexBenchmarks {
   @Param(Array("10", "12", "14", "16", "18"))
   var pow: Int = 0
 
-  var fs: Array[Float] = null
-  var ds: Array[Double] = null
+  var fs: Array[Float] = uninitialized
+  var ds: Array[Double] = uninitialized
 
   @Setup
   def setUp(): Unit = {

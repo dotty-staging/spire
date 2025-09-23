@@ -572,12 +572,12 @@ object IntervalSeq {
 
     private[this] val kinds = s.kinds
 
-    private[this] var lower: Bound[T] = if (s.belowAll) Unbound() else null
+    private[this] var lower: Bound[T] | Null = if (s.belowAll) Unbound() else null
 
     private[this] var i = 0
 
     private[this] def nextInterval() = {
-      var result: Interval[T] = null
+      var result: Interval[T] | Null = null
       if (i < kinds.length) {
         val kind = kinds(i)
         val value = values(i)
@@ -598,20 +598,20 @@ object IntervalSeq {
           (kind: @switch) match {
             case K01 =>
               val upper = Open(value)
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = upper
             case K00 =>
               val upper = Open(value)
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = null
             case K10 =>
               val upper = Closed(value)
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = null
             case _ => wrong
           }
       } else if (lower ne null) {
-        result = Interval.fromBounds(lower, Unbound())
+        result = Interval.fromBounds(lower.nn, Unbound())
         lower = null
       } else {
         Iterator.empty.next()

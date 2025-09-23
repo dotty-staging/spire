@@ -263,10 +263,10 @@ object IntervalTrie {
     simpleSets.foldLeft(empty[Long])(_ | _)
   }
 
-  final private def foreachInterval[T: Element, U](a0: Boolean, a: Tree)(f: Interval[T] => U): Unit = {
+  final private def foreachInterval[T: Element, U](a0: Boolean, a: Tree | Null)(f: Interval[T] => U): Unit = {
     val x = implicitly[Element[T]]
     import x._
-    def op(b0: Bound[T], a0: Boolean, a: Tree): Bound[T] = a match {
+    def op(b0: Bound[T], a0: Boolean, a: Tree | Null): Bound[T] = a match {
       case Below(a) =>
         if (a0)
           f(Interval.fromBounds(b0, Open(fromLong(a))))
@@ -294,7 +294,7 @@ object IntervalTrie {
       f(Interval.fromBounds(last, Unbound()))
   }
 
-  abstract private class TreeIterator[T](a: Tree) extends Iterator[T] {
+  abstract private class TreeIterator[T](a: Tree | Null) extends Iterator[T] {
 
     var index = 0
     var buffer = new Array[Tree](65)
@@ -323,7 +323,7 @@ object IntervalTrie {
     }
   }
 
-  final private class EdgeIterator[T: Element](tree: Tree) extends TreeIterator[T](tree) {
+  final private class EdgeIterator[T: Element](tree: Tree | Null) extends TreeIterator[T](tree) {
     private val element = implicitly[Element[T]]
 
     def hasNext = hasNextLeaf
@@ -335,11 +335,11 @@ object IntervalTrie {
 
     private[this] val element = implicitly[Element[T]]
 
-    private[this] var lower: Bound[T] = if (e.belowAll) Unbound() else null
+    private[this] var lower: Bound[T] | Null = if (e.belowAll) Unbound() else null
 
-    private[this] def nextInterval(): Interval[T] = {
+    private[this] def nextInterval(): Interval[T] | Null = {
       import element.{fromLong, order}
-      var result: Interval[T] = null
+      var result: Interval[T] | Null = null
       if (hasNextLeaf) {
         val leaf = nextLeaf()
         if (lower eq null) leaf match {
@@ -361,22 +361,22 @@ object IntervalTrie {
           leaf match {
             case Both(x) =>
               val upper = Open(fromLong(x))
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = upper
             case Below(x) =>
               val upper = Open(fromLong(x))
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = null
             case Above(x) =>
               val upper = Closed(fromLong(x))
-              result = Interval.fromBounds[T](lower, upper)
+              result = Interval.fromBounds[T](lower.nn, upper)
               lower = null
             // $COVERAGE-OFF$
             case _ => unreachable
             // $COVERAGE-ON$
           }
       } else if (lower ne null) {
-        result = Interval.fromBounds(lower, Unbound())
+        result = Interval.fromBounds(lower.nn, Unbound())
         lower = null
       } else {
         Iterator.empty.next()
@@ -396,10 +396,10 @@ object IntervalTrie {
     }
   }
 
-  private def apply[T: Element](below: Boolean, tree: Tree): IntervalTrie[T] =
+  private def apply[T: Element](below: Boolean, tree: Tree | Null): IntervalTrie[T] =
     IntervalTrieImpl(below, tree)
 
-  final private case class IntervalTrieImpl[T](belowAll: Boolean, tree: Tree)(implicit ise: Element[T])
+  final private case class IntervalTrieImpl[T](belowAll: Boolean, tree: Tree | Null)(implicit ise: Element[T])
       extends IntervalTrie[T] { lhs =>
 
     import Tree._
@@ -426,7 +426,7 @@ object IntervalTrie {
 
     def hull: Interval[T] = {
       @tailrec
-      def lowerBound(a: Tree): Bound[T] = a match {
+      def lowerBound(a: Tree | Null): Bound[T] = a match {
         case a: Branch => lowerBound(a.left)
         case Above(x)  => Open(ise.fromLong(x))
         case Below(x)  => Closed(ise.fromLong(x))
@@ -434,7 +434,7 @@ object IntervalTrie {
         case _         => sys.error("no")
       }
       @tailrec
-      def upperBound(a: Tree): Bound[T] = a match {
+      def upperBound(a: Tree | Null): Bound[T] = a match {
         case a: Branch => upperBound(a.right)
         case Both(x)   => Closed(ise.fromLong(x))
         case Above(x)  => Closed(ise.fromLong(x))

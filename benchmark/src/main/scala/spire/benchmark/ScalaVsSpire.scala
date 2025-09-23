@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 import org.openjdk.jmh.annotations._
 
 import scala.util.Random
+import scala.compiletime.uninitialized
 import Random._
 
 import spire.algebra._
@@ -39,9 +40,9 @@ class ScalaVsSpireBenchmarks {
 
   var size: Int = 0
 
-  var as: Array[Int] = null
-  var bs: Array[Int] = null
-  var cs: Array[Int] = null
+  var as: Array[Int] = uninitialized
+  var bs: Array[Int] = uninitialized
+  var cs: Array[Int] = uninitialized
 
   @Setup
   def setup(): Unit = {
