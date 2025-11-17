@@ -14,24 +14,25 @@ val header = """|***************************************************************
 
 import scala.language.existentials
 
-lazy val scalaCheckVersion = "1.15.4"
+lazy val scalaCheckVersion = "1.17.0"
 
-lazy val munit = "0.7.29"
-lazy val munitDiscipline = "1.0.9"
+lazy val munit = "1.0.0-M7"
+lazy val munitDiscipline = "2.0.0-M3"
 
-lazy val algebraVersion = "2.7.0"
+lazy val algebraVersion = "2.9.0"
 
 lazy val apfloatVersion = "1.10.1"
 lazy val jscienceVersion = "4.3.1"
 lazy val apacheCommonsMath3Version = "3.6.1"
 
-val Scala213 = "2.13.8"
-val Scala3 = "3.1.0"
+val Scala213 = "2.13.16"
+val Scala3 = "3.2.2"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / tlBaseVersion := "0.18"
 
+ThisBuild / scalaVersion := Scala213
 ThisBuild / crossScalaVersions := Seq(Scala213, Scala3)
 ThisBuild / githubWorkflowJavaVersions := Seq("8", "11", "17").map(JavaSpec.temurin(_))
 
@@ -52,24 +53,24 @@ ThisBuild / developers := List(
   )
 )
 
-ThisBuild / tlFatalWarningsInCi := false
+ThisBuild / tlFatalWarnings := false
 
 // Projects
 
 lazy val root = tlCrossRootProject
-  .aggregate(macros, core, data, extras, examples, laws, legacy, platform, tests, util, benchmark)
+  .aggregate(macros, core, extras, examples, laws, platform, tests, util, benchmark)
   .settings(spireSettings)
   .settings(unidocSettings)
   .enablePlugins(ScalaUnidocPlugin)
 
-lazy val platform = crossProject(JSPlatform, JVMPlatform)
+lazy val platform = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(moduleName := "spire-platform")
   .settings(spireSettings: _*)
   .jvmSettings(commonJvmSettings: _*)
   .jsSettings(commonJsSettings: _*)
   .dependsOn(macros, util)
 
-lazy val macros = crossProject(JSPlatform, JVMPlatform)
+lazy val macros = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(moduleName := "spire-macros")
   .settings(spireSettings: _*)
@@ -78,21 +79,7 @@ lazy val macros = crossProject(JSPlatform, JVMPlatform)
   .jvmSettings(commonJvmSettings: _*)
   .jsSettings(commonJsSettings: _*)
 
-lazy val data = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
-  .settings(moduleName := "spire-data")
-  .settings(spireSettings: _*)
-  .jvmSettings(commonJvmSettings: _*)
-  .jsSettings(commonJsSettings: _*)
-
-lazy val legacy = crossProject(JSPlatform, JVMPlatform)
-  .crossType(CrossType.Pure)
-  .settings(moduleName := "spire-legacy")
-  .settings(spireSettings: _*)
-  .jvmSettings(commonJvmSettings: _*)
-  .jsSettings(commonJsSettings: _*)
-
-lazy val util = crossProject(JSPlatform, JVMPlatform)
+lazy val util = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(moduleName := "spire-util")
   .settings(spireSettings: _*)
@@ -100,24 +87,23 @@ lazy val util = crossProject(JSPlatform, JVMPlatform)
   .jsSettings(commonJsSettings: _*)
   .dependsOn(macros)
 
-lazy val core = crossProject(JSPlatform, JVMPlatform)
+lazy val core = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(moduleName := "spire")
   .settings(spireSettings: _*)
   .settings(coreSettings: _*)
-  .enablePlugins(BuildInfoPlugin)
   .jvmSettings(commonJvmSettings: _*)
   .jsSettings(commonJsSettings: _*)
   .dependsOn(macros, platform, util)
 
-lazy val extras = crossProject(JSPlatform, JVMPlatform)
+lazy val extras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(moduleName := "spire-extras")
   .settings(spireSettings: _*)
   .settings(extrasSettings: _*)
   .jvmSettings(commonJvmSettings: _*)
   .jsSettings(commonJsSettings: _*)
-  .dependsOn(macros, platform, util, core, data)
+  .dependsOn(macros, platform, util, core)
 
 lazy val docs = project
   .in(file("site"))
@@ -141,7 +127,7 @@ lazy val examples = project
   .settings(commonJvmSettings)
   .dependsOn(core.jvm, extras.jvm)
 
-lazy val laws = crossProject(JSPlatform, JVMPlatform)
+lazy val laws = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(moduleName := "spire-laws")
   .settings(spireSettings: _*)
@@ -155,7 +141,7 @@ lazy val laws = crossProject(JSPlatform, JVMPlatform)
   .jsSettings(commonJsSettings: _*)
   .dependsOn(core, extras)
 
-lazy val tests = crossProject(JSPlatform, JVMPlatform)
+lazy val tests = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .settings(moduleName := "spire-tests")
   .settings(spireSettings: _*)
@@ -163,7 +149,7 @@ lazy val tests = crossProject(JSPlatform, JVMPlatform)
   .enablePlugins(NoPublishPlugin)
   .jvmSettings(commonJvmSettings: _*)
   .jsSettings(commonJsSettings: _*)
-  .dependsOn(core, data, legacy, extras, laws)
+  .dependsOn(core, extras, laws)
 
 lazy val benchmark: Project = project
   .in(file("benchmark"))
@@ -197,7 +183,6 @@ lazy val commonDeps = Seq(
 )
 
 lazy val commonSettings = Seq(
-  resolvers += Resolver.sonatypeRepo("snapshots"),
   headerLicense := Some(HeaderLicense.Custom(header))
 ) ++ scalaMacroDependencies
 
@@ -207,16 +192,7 @@ lazy val commonJvmSettings = Seq()
 
 ThisBuild / tlSiteApiUrl := Some(url("https://www.javadoc.io/doc/org.typelevel/spire_2.13/latest/spire/index.html"))
 
-lazy val scoverageSettings = Seq(
-  coverageMinimumStmtTotal := 40,
-  coverageFailOnMinimum := false,
-  coverageHighlighting := true,
-  coverageExcludedPackages := "spire\\.benchmark\\..*;spire\\.macros\\..*"
-)
-
 lazy val coreSettings = Seq(
-  buildInfoKeys := Seq[BuildInfoKey](version, scalaVersion),
-  buildInfoPackage := "spire",
   Compile / sourceGenerators += (Compile / genProductTypes).taskValue,
   genProductTypes := {
     val scalaSource = (Compile / sourceManaged).value
@@ -243,7 +219,7 @@ lazy val munitSettings = Seq(
   )
 )
 
-lazy val spireSettings = buildSettings ++ commonSettings ++ commonDeps ++ scoverageSettings
+lazy val spireSettings = buildSettings ++ commonSettings ++ commonDeps
 
 lazy val unidocSettings = Seq(
   ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(examples, benchmark, tests.jvm)

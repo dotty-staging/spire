@@ -188,7 +188,9 @@ class LawSuite extends munit.DisciplineSuite {
   checkAll("String[Int]", GroupLaws[String].monoid)
   checkAll("Array[Int]", GroupLaws[Array[Int]].monoid)
 
-  checkAll("Seq[String]", PartialGroupLaws[Seq[String]](using spire.optional.genericEq.generic, implicitly).semigroupoid)
+  checkAll("Seq[String]",
+           PartialGroupLaws[Seq[String]](using spire.optional.genericEq.generic, implicitly).semigroupoid
+  )
   checkAll("Seq[Int]", PartialGroupLaws[Seq[Int]].groupoid)
 
   checkAll("String", VectorSpaceLaws[String, Int].metricSpace)

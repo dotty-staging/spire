@@ -282,7 +282,7 @@ be implemented via a single `partialCompare` method, described below. `PartialOr
 A partial order is defined from a binary relation `<=`, which satisfies the relations:
 
 * `a <= a` (*reflexivity*)
-* if `a <= b` and `b <= a`, then `a === c` (*anti-symmetry*)
+* if `a <= b` and `b <= a`, then `a === b` (*anti-symmetry*)
 * if `a <= b` and `b <= c`, then `a <= c` (*transitivity*)
 
 To compute both `<=` and `>=` at the same time, the method `partialCompare` uses
@@ -626,7 +626,7 @@ only be used in situations where a large number of rational numbers
 with the same denominator are needed, and efficiency is very
 important.
 
-#### Complex[A] and Quaternion[A]
+#### Complex\[A\] and Quaternion\[A\]
 
 These generic types represent complex numbers (`x + yi`) and
 quaternions (`w + xi + xj + zk`) respectively. They can be
@@ -653,7 +653,7 @@ a number of the highest precision.
 numbers. The type keeps operations as safe as possible, while
 providing access to all operators and methods.
 
-#### Interval[A]
+#### Interval\[A\]
 
 Interval supports arithmetic across a range of possible `A`
 values. This can be thought of as representing uncertainty about a
@@ -680,7 +680,7 @@ is because we can multiply the interval by 2 to get `(6, 8)` which is
 clearly not empty. The underlying continuous interval contains values
 which when multiplied by a scalar become valid `Int` values.
 
-#### Polynomial[C]
+#### Polynomial\[C\]
 
 Currently Spire supports univariate polynomials. These are polynomials
 with a single variable (e.g. *x*) with the following structure:
@@ -782,6 +782,9 @@ import Real.{sin, cos}
 // will return Real(1) no matter what value is provided
 def circle(a: Real): Real = sqrt(cos(a).pow(2) + sin(a).pow(2))
 ```
+Keep in mind that precision of roots is not perfectly accurate. See
+[Irrational and Transcendental type classes](#irrational-and-transcendental-type-classes)
+for more information.
 
 One interesting consequence of the design of computable real numbers
 is non-continuous operations (such as sign tests, comparisons, and
@@ -948,7 +951,7 @@ generator is returned as well, which allows these generators to be used in a
 pure-functional context. The same `Dist[A]` instances that would be used with
 a mutable generator are also applicable here.
 
-#### Creation random values with Dist[A]
+#### Creation random values with Dist\[A\]
 
 The `Dist[A]` type class represents a strategy for generating a
 distribution of `A` values given a `Generator` instance. `Dist[A]`

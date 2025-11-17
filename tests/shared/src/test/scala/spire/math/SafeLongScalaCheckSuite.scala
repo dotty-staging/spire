@@ -104,9 +104,9 @@ class SafeLongScalaCheckSuite extends munit.ScalaCheckSuite {
   }
 
   test("x /% y") {
-    assertEquals((smin /% SafeLong(-1)), (-smin, zero))
-    assertEquals((smin /% -1L), (-smin, zero))
-    assertEquals((smin /% BigInt(-1)), (-smin, zero))
+    assertEquals(smin /% SafeLong(-1), (-smin, zero))
+    assertEquals(smin /% -1L, (-smin, zero))
+    assertEquals(smin /% BigInt(-1), (-smin, zero))
   }
 
   property("x ** y") {
@@ -155,15 +155,13 @@ class SafeLongScalaCheckSuite extends munit.ScalaCheckSuite {
     }
   }
 
-  property("x >> k") {
-    forAll { (x: BigInt, k: Byte) =>
-      if (!sys.props.get("java.vm.name").contains("Scala.js")) {
-        // Scala.js runs into UB for BigInteger.shiftRight(Int.MinValue)
+  if (!sys.props.get("java.vm.name").contains("Scala Native"))
+    property("x >> k") {
+      forAll { (x: BigInt, k: Byte) =>
         intercept[RuntimeException] { SafeLong(x) >> Int.MinValue }
+        invariant(SafeLong(x) >> k) == SafeLong(x >> k)
       }
-      invariant(SafeLong(x) >> k) == SafeLong(x >> k)
     }
-  }
 
   property("long safelongs") {
     forAll { (x: Long) =>
@@ -234,11 +232,11 @@ class SafeLongScalaCheckSuite extends munit.ScalaCheckSuite {
     assertEquals(smin.gcd(SafeLongBigInteger(BigInteger.ZERO)), firstBig)
     assertEquals(SafeLong.minusOne.gcd(SafeLongBigInteger(BigInteger.ZERO)), SafeLong.one)
 
-    assertEquals((SafeLong(0).gcd(SafeLong(-13))), SafeLong(13))
-    assertEquals((SafeLong(0).gcd(smin)), firstBig)
+    assertEquals(SafeLong(0).gcd(SafeLong(-13)), SafeLong(13))
+    assertEquals(SafeLong(0).gcd(smin), firstBig)
 
-    assertEquals((SafeLong(-13).gcd(SafeLong(0))), SafeLong(13))
-    assertEquals((smin.gcd(SafeLong(0))), firstBig)
+    assertEquals(SafeLong(-13).gcd(SafeLong(0)), SafeLong(13))
+    assertEquals(smin.gcd(SafeLong(0)), firstBig)
   }
 
   test("regressions") {

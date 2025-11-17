@@ -193,7 +193,7 @@ sealed abstract class Rational extends ScalaNumber with ScalaNumericConversions 
    *   A positive integer.
    */
   def limitTo(max: SafeLong): Rational = if (this.signum < 0) {
-    -((-this).limitTo(max))
+    -(-this).limitTo(max)
   } else {
     require(max.signum > 0, "Limit must be a positive integer.")
 
@@ -386,7 +386,7 @@ object Rational extends RationalInstances {
     val bits = java.lang.Double.doubleToLongBits(x)
     val value =
       if ((bits >> 63) < 0) -(bits & 0x000fffffffffffffL | 0x0010000000000000L)
-      else (bits & 0x000fffffffffffffL | 0x0010000000000000L)
+      else bits & 0x000fffffffffffffL | 0x0010000000000000L
     val exp = ((bits >> 52) & 0x7ff).toInt - 1075 // 1023 + 52
     if (exp > 10) {
       apply(SafeLong(value) << exp, SafeLong.one)
@@ -403,8 +403,9 @@ object Rational extends RationalInstances {
     if (x.ulp >= 1) {
       apply(x.toBigInt, 1)
     } else {
-      val n = (x / x.ulp).toBigInt
-      val d = (BigDecimal(1.0) / x.ulp).toBigInt
+      val ulp = x.bigDecimal.ulp()
+      val n = BigInt(x.bigDecimal.divide(ulp).toBigIntegerExact)
+      val d = BigInt(JBigDecimal.ONE.divide(ulp).toBigIntegerExact)
       apply(n, d)
     }
   }
